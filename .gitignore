@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
@@ -39,3 +43,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Local setup scripts
+setup-env.bat
+debug-nextauth.js
+check-oauth-setup.js
+test-db-connection.js
+test-github-oauth.js

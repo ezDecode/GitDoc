@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface GitHubConnectorProps {
   isConnected: boolean;
@@ -14,10 +15,22 @@ export default function GitHubConnector({
 }: GitHubConnectorProps) {
   const { data: session } = useSession();
   const [isConnecting, setIsConnecting] = useState(false);
-
+  const router = useRouter();
   // Check if user is connected with GitHub based on session
   useEffect(() => {
-    if (session?.provider === "github" && session?.accessToken) {
+    // Check for GitHub connection in session data
+    const isGithubSession = (session as any)?.provider === "github";
+    const hasAccessToken = !!(session as any)?.accessToken;
+    const hasGithubAccount =
+      session?.user && (isGithubSession || hasAccessToken);
+
+    console.log("Session check:", {
+      isGithubSession,
+      hasAccessToken,
+      provider: (session as any)?.provider,
+    });
+
+    if (hasGithubAccount) {
       onConnectionChange(true);
     } else {
       onConnectionChange(false);
@@ -27,21 +40,31 @@ export default function GitHubConnector({
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      // Redirect to GitHub OAuth
-      await signIn("github", { callbackUrl: "/dashboard" });
+      // Force clear any local storage session data to ensure a fresh auth flow
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("next-auth.session-token");
+        localStorage.removeItem("next-auth.callback-url");
+        localStorage.removeItem("next-auth.csrf-token");
+      }
+
+      // Redirect to GitHub OAuth with explicit parameters
+      await signIn("github", {
+        callbackUrl: `/dashboard?t=${Date.now()}`,
+        redirect: true,
+      });
     } catch (error) {
       console.error("Failed to connect to GitHub:", error);
       setIsConnecting(false);
     }
   };
-
-  const handleDisconnect = () => {
-    onConnectionChange(false);
+  const handleDisconnect = async () => {
+    // Actually sign out the user
+    await signOut({ callbackUrl: "/" });
   };
-
   // Check if the user is authenticated with GitHub
   const isGitHubConnected =
-    session?.provider === "github" && session?.accessToken;
+    (session as any)?.provider === "github" ||
+    ((session as any)?.accessToken && session?.user);
 
   if (isGitHubConnected) {
     return (

@@ -1,26 +1,264 @@
 @import "tailwindcss";
 
+/* =========================================
+   FONTS
+   ========================================= */
+@font-face {
+  font-family: 'PPMori';
+  src: url('/fonts/PPMori-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PPMori';
+  src: url('/fonts/PPMori-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* =========================================
+   THEME VARIABLES
+   ========================================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light theme */
+  --background: #fff5e6;
+  --foreground: #825d45;
+  --primary: #ff4b55;
+  --primary-hover: #ff6b74;
+  --card-bg: #fffaf4;
+  --card-bg-secondary: #fff9f0;
+  --card-hover: #fff7eb;
+  --border: #f3e1cc;
+  --text-primary: #825d45;
+  --text-secondary: #9b7b66;
+  --text-muted: #b39884;
+  --shadow: rgba(0, 0, 0, 0.05);
+  --shadow-md: rgba(0, 0, 0, 0.1);
+  --font-sans: 'PPMori', system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  /* Light theme alternative */
+  --background: #fef6e9;
+  --foreground: #825d45;
+  --primary: #ff4b55;
+  --primary-hover: #ff6b74;
+  --card-bg: #fff9f0;
+  --card-bg-secondary: #fff5e6;
+  --card-hover: #fff2dd;
+  --border: #f3e1cc;
+  --text-primary: #825d45;
+  --text-secondary: #9b7b66;
+  --text-muted: #b39884;
+  --shadow: rgba(130, 93, 69, 0.1);
+  --shadow-md: rgba(130, 93, 69, 0.15);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* =========================================
+   BASE STYLES
+   ========================================= */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================
+   COMPONENT STYLES
+   ========================================= */
+/* 3D Card Effects */
+.card-3d {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px var(--shadow);
+  border-radius: 0.5rem;
+}
+
+.card-3d:hover {
+  box-shadow: 0 8px 20px var(--shadow-md);
+}
+
+.card-3d-right {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 5px 0 15px var(--shadow);
+  border-radius: 0.5rem;
+}
+
+/* Documentation styles */
+.prose {
+  max-width: none;
+}
+
+.prose pre {
+  background-color: var(--card-bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.markdown-body {
+  font-family: 'Binoma', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.markdown-body h1 {
+  font-size: 1.875rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-body p {
+  margin-bottom: 1rem;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-body code {
+  background-color: var(--card-bg-secondary);
+  color: var(--text-primary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.markdown-body blockquote {
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--primary);
+  background-color: var(--card-bg-secondary);
+  font-style: italic;
+}
+
+/* Better button styles */
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 75, 85, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--card-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* =========================================
+   SCROLLBAR STYLES
+   ========================================= */
+/* Default scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff9f0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f3e1cc;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e9d5b9;
+}
+
+/* Custom accent scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #fff5e6;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ff4b55;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #e0424a;
+}
+
+/* Alternative theme scrollbar adjustments */
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #fff9f0;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ff6b74;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ff8d94;
 }

@@ -7,8 +7,9 @@ import { useSearchParams } from "next/navigation";
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const error = searchParams.get("error");
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn("google", { callbackUrl });

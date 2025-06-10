@@ -25,9 +25,29 @@ export default function Dashboard() {
   const [isGitHubConnected, setIsGitHubConnected] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [repositories, setRepositories] = useState<Repository[]>([]);
+
+  // Check authentication status
   useEffect(() => {
     if (status === "loading") return;
     if (!session) redirect("/auth/signin");
+  }, [session, status]);
+
+  // Update GitHub connection status based on session data
+  useEffect(() => {
+    if (status !== "loading" && session) {
+      const isGithub = (session as any)?.provider === "github";
+      const hasToken = !!(session as any)?.accessToken;
+      console.log("Dashboard session check:", {
+        isGithub,
+        hasToken,
+        provider: (session as any)?.provider,
+      });
+
+      // Check if this is a GitHub user
+      if (isGithub || hasToken) {
+        setIsGitHubConnected(true);
+      }
+    }
   }, [session, status]);
 
   if (status === "loading") {
@@ -71,7 +91,8 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {" "}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left Panel - GitHub Connection & Repository Selection */}
           <div className="lg:col-span-2 space-y-6">
             {/* GitHub Connection Card */}
@@ -115,7 +136,7 @@ export default function Dashboard() {
           </div>
 
           {/* Right Panel - Documentation Generation */}
-          <div className="space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             {selectedRepo && (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
                 <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">

@@ -1,50 +1,36 @@
-// Mock Prisma client for use without database
-// This file replaces the actual Prisma client with a simple mock
-// for the JWT-only authentication flow
+import { PrismaClient } from "@prisma/client";
 
-export interface Document {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  repositoryUrl?: string;
-  repositoryName?: string;
-  format?: string;
+// This is the standard way to instantiate Prisma Client in a Next.js app.
+// It prevents creating too many connections in a serverless environment.
+
+declare global {
+  // allow global `var` declarations
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined;
 }
 
-// Mock implementation of Prisma client for document storage
-export const prisma = {
-  document: {
-    create: async (data: any) => {
-      console.log("Mock document create:", data);
-      return {
-        id: `mock-${Date.now()}`,
-        ...data.data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-    },
-    findMany: async (params: any) => {
-      console.log("Mock findMany called with:", params);
-      return []; // Return empty array as mock
-    },
-    findUnique: async (params: any) => {
-      console.log("Mock findUnique called with:", params);
-      return null; // Return null as mock
-    },
-    update: async (params: any) => {
-      console.log("Mock update called with:", params);
-      return {
-        id: params.where.id,
-        ...params.data,
-        updatedAt: new Date(),
-      };
-    },
-    delete: async (params: any) => {
-      console.log("Mock delete called with:", params);
-      return { id: params.where.id };
-    },
-  },
+// Create Prisma Client with safe configuration
+const createPrismaClient = () => {
+  try {
+    return new PrismaClient({
+      log:
+        process.env.NODE_ENV === "development"
+          ? ["query", "error", "warn"]
+          : ["error"],
+      // Explicitly set errorFormat to avoid constructor issues
+      errorFormat: "pretty",
+    });
+  } catch (error) {
+    console.error("Failed to create Prisma client:", error);
+    // Fallback configuration
+    return new PrismaClient({
+      log: ["error"],
+    });
+  }
 };
+
+export const prisma = global.prisma || createPrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  global.prisma = prisma;
+}

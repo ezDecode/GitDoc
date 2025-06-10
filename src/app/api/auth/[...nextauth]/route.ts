@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 
 // Ensure all required environment variables are available
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -23,18 +25,12 @@ if (!process.env.NEXTAUTH_SECRET) {
 }
 
 export const authOptions: NextAuthOptions = {
-  // No database adapter - using JWT sessions only
+  // Enable PrismaAdapter for database persistence
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
     }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -43,6 +39,9 @@ export const authOptions: NextAuthOptions = {
         params: {
           scope: "read:user user:email repo",
         },
+      },
+      httpOptions: {
+        timeout: 40000,
       },
     }),
   ],
@@ -55,34 +54,51 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async session({ session, token }: any) {
-      // Add user ID from token to the session
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
+    async redirect({ url, baseUrl }) {
+      // Add timestamp to prevent caching issues
+      const timestamp = `t=${Date.now()}`;
+
+      // Allow relative callback URLs
+      if (url.startsWith("/")) {
+        const hasParams = url.includes("?");
+        return `${baseUrl}${url}${hasParams ? "&" : "?"}${timestamp}`;
       }
-      // Add access token to session for GitHub API access
-      if (token.accessToken) {
-        session.accessToken = token.accessToken;
+      // Allow same-origin URLs
+      if (url.startsWith(baseUrl)) {
+        const hasParams = url.includes("?");
+        return `${url}${hasParams ? "&" : "?"}${timestamp}`;
       }
-      // Add provider info
-      if (token.provider) {
-        session.provider = token.provider;
+      // Default to dashboard with timestamp
+      return `${baseUrl}/dashboard?${timestamp}`;
+    },
+    async session({ session, token }) {
+      // Add user info to session
+      if (token && session.user) {
+        session.user.id = token.sub || "";
+        // Explicitly add provider and token information to session
+        if (token.accessToken) {
+          (session as any).accessToken = token.accessToken;
+        }
+        if (token.provider) {
+          (session as any).provider = token.provider;
+        }
       }
       return session;
     },
-    async jwt({ token, user, account }: any) {
-      // Keep the user ID in the token for later use
-      if (user) {
-        token.id = user.id;
-      }
-      // Save the access token and provider for API access
+    async jwt({ token, account, user }) {
+      // Save the access token for API access
       if (account) {
         token.accessToken = account.access_token;
         token.provider = account.provider;
+        // Store additional GitHub-specific information if available
+        if (account.provider === "github" && account.access_token) {
+          token.githubToken = account.access_token;
+        }
       }
       return token;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
 

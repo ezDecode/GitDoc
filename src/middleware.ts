@@ -40,7 +40,6 @@ export default withAuth(
         if (req.nextUrl.pathname.startsWith("/api/github")) return !!token;
         if (req.nextUrl.pathname.startsWith("/dashboard")) return !!token;
         if (req.nextUrl.pathname.startsWith("/generate")) return !!token;
-        if (req.nextUrl.pathname.startsWith("/editor")) return !!token;
 
         return true;
       },
@@ -49,10 +48,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/api/:path*",
-    "/dashboard/:path*",
-    "/generate/:path*",
-    "/editor/:path*",
-  ],
+  matcher: ["/api/:path*", "/dashboard/:path*", "/generate/:path*"],
 };

@@ -67,15 +67,12 @@ export default function Dashboard() {
   useEffect(() => {
     if (status === "loading") return;
     if (!session) redirect("/auth/signin");
-  }, [session, status]);
-
-  // Fetch repositories
+  }, [session, status]); // Fetch repositories
   useEffect(() => {
     if (session) {
       fetchRepositories();
     }
   }, [session]);
-
   const fetchRepositories = async () => {
     setIsLoading(true);
     try {
@@ -97,7 +94,6 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   };
-
   const filteredRepositories = Array.isArray(repositories)
     ? repositories.filter(
         (repo) =>
@@ -132,6 +128,19 @@ export default function Dashboard() {
     });
   };
 
+  const getLanguageColor = (language: string) => {
+    const colors: Record<string, string> = {
+      JavaScript: "bg-yellow-100 text-yellow-800",
+      TypeScript: "bg-blue-100 text-blue-800",
+      Python: "bg-green-100 text-green-800",
+      Java: "bg-red-100 text-red-800",
+      "C++": "bg-purple-100 text-purple-800",
+      React: "bg-cyan-100 text-cyan-800",
+      Vue: "bg-emerald-100 text-emerald-800",
+      Angular: "bg-red-100 text-red-800",
+    };
+    return colors[language] || "bg-gray-100 text-gray-800";
+  };
   if (status === "loading") {
     return (
       <div
@@ -148,7 +157,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
   return (
     <div
       className="min-h-screen"
@@ -195,6 +203,7 @@ export default function Dashboard() {
                 <CogIcon className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
+                {" "}
                 <img
                   src={session?.user?.image || ""}
                   alt={session?.user?.name || ""}
@@ -248,9 +257,7 @@ export default function Dashboard() {
               </button>
             ))}
           </nav>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        </div>        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left Column - Repository Selection (Compact) */}
           <div className="lg:col-span-2">
             <div
@@ -436,9 +443,7 @@ export default function Dashboard() {
                                         }}
                                       >
                                         <CalendarDaysIcon className="h-3 w-3" />
-                                        <span>
-                                          {formatDate(repo.updated_at)}
-                                        </span>
+                                        <span>{formatDate(repo.updated_at)}</span>
                                       </div>
                                     </div>
                                     {repo.language && (
@@ -465,7 +470,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                           ))}
-
+                          
                           {/* Add Repository Capsule */}
                           <button
                             className="inline-flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border border-dashed hover:shadow-sm"
@@ -527,8 +532,7 @@ export default function Dashboard() {
                               className="text-xs mt-1"
                               style={{ color: "rgb(17, 24, 39)", opacity: 0.7 }}
                             >
-                              {selectedRepo.language} •{" "}
-                              {selectedRepo.stargazers_count} stars
+                              {selectedRepo.language} • {selectedRepo.stargazers_count} stars
                             </p>
                           </div>
                           <button
@@ -612,94 +616,83 @@ export default function Dashboard() {
                       📚 Include Sections
                     </h3>
                     <div className="space-y-4">
-                      {[
-                        {
-                          key: "includeReadme",
-                          label: "README",
-                          icon: "📘",
-                          desc: "Project overview and setup",
-                        },
-                        {
-                          key: "includeApi",
-                          label: "API Reference",
-                          icon: "⚙️",
-                          desc: "Function and class documentation",
-                        },
-                        {
-                          key: "includeExamples",
-                          label: "Code Examples",
-                          icon: "🧪",
-                          desc: "Usage examples and snippets",
-                        },
-                        {
-                          key: "includeInstallation",
-                          label: "Installation Guide",
-                          icon: "📦",
-                          desc: "Setup and deployment steps",
-                        },
-                        {
-                          key: "includeContributing",
-                          label: "Contributing Guidelines",
-                          icon: "👥",
-                          desc: "How to contribute to the project",
-                        },
-                      ].map((section) => (
-                        <label
-                          key={section.key}
-                          className={`flex items-start space-x-4 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                            (options[
-                              section.key as keyof DocumentationOptions
-                            ] as boolean)
-                              ? "ring-2 ring-red-200"
-                              : "hover:bg-gray-50"
-                          }`}
-                          style={{
-                            backgroundColor: (options[
-                              section.key as keyof DocumentationOptions
-                            ] as boolean)
+                      {{
+                        key: "includeReadme",
+                        label: "README",
+                        icon: "📘",
+                        desc: "Project overview and setup",
+                      },
+                      {
+                        key: "includeApi",
+                        label: "API Reference",
+                        icon: "⚙️",
+                        desc: "Function and class documentation",
+                      },
+                      {
+                        key: "includeExamples",
+                        label: "Code Examples",
+                        icon: "🧪",
+                        desc: "Usage examples and snippets",
+                      },
+                      {
+                        key: "includeInstallation",
+                        label: "Installation Guide",
+                        icon: "📦",
+                        desc: "Setup and deployment steps",
+                      },
+                      {
+                        key: "includeContributing",
+                        label: "Contributing Guidelines",
+                        icon: "👥",
+                        desc: "How to contribute to the project",
+                      },
+                    ].map((section) => (
+                      <label
+                        key={section.key}
+                        className={`flex items-start space-x-4 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                          options[section.key as keyof DocumentationOptions] as boolean
+                            ? 'ring-2 ring-red-200'
+                            : 'hover:bg-gray-50'
+                        }`}
+                        style={{
+                          backgroundColor: 
+                            options[section.key as keyof DocumentationOptions] as boolean
                               ? "rgb(232, 240, 254)"
                               : "transparent",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={
+                            options[
+                              section.key as keyof DocumentationOptions
+                            ] as boolean
+                          }
+                          onChange={(e) =>
+                            setOptions({
+                              ...options,
+                              [section.key]: e.target.checked,
+                            })
+                          }
+                          className="h-5 w-5 rounded border-2 focus:ring-2 focus:ring-offset-0 mt-0.5"
+                          style={{ 
+                            accentColor: "rgb(254, 74, 96)",
+                            borderColor: "rgb(230, 232, 235)"
                           }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={
-                              options[
-                                section.key as keyof DocumentationOptions
-                              ] as boolean
-                            }
-                            onChange={(e) =>
-                              setOptions({
-                                ...options,
-                                [section.key]: e.target.checked,
-                              })
-                            }
-                            className="h-5 w-5 rounded border-2 focus:ring-2 focus:ring-offset-0 mt-0.5"
-                            style={{
-                              accentColor: "rgb(254, 74, 96)",
-                              borderColor: "rgb(230, 232, 235)",
-                            }}
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-lg">{section.icon}</span>
-                              <span
-                                className="text-sm font-semibold"
-                                style={{ color: "rgb(17, 24, 39)" }}
-                              >
-                                {section.label}
-                              </span>
-                            </div>
-                            <p
-                              className="text-xs"
-                              style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}
-                            >
-                              {section.desc}
-                            </p>
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="text-lg">{section.icon}</span>
+                            <span className="text-sm font-semibold" style={{ color: "rgb(17, 24, 39)" }}>
+                              {section.label}
+                            </span>
                           </div>
-                        </label>
-                      ))}
-                    </div>
+                          <p className="text-xs" style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}>
+                            {section.desc}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
                   </div>
 
                   {/* Output Configuration */}
@@ -713,80 +706,64 @@ export default function Dashboard() {
                         📄 Output Format
                       </h3>
                       <div className="space-y-3">
-                        {[
-                          {
-                            value: "markdown",
-                            label: "Markdown (.md)",
-                            desc: "Best for GitHub and documentation platforms",
-                            icon: "📝",
-                          },
-                          {
-                            value: "html",
-                            label: "HTML (.html)",
-                            desc: "For web deployment and styling",
-                            icon: "🌐",
-                          },
-                          {
-                            value: "pdf",
-                            label: "PDF (.pdf)",
-                            desc: "Professional document format",
-                            icon: "📄",
-                          },
-                        ].map((format) => (
-                          <label
-                            key={format.value}
-                            className={`flex items-start space-x-4 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                              options.format === format.value
-                                ? "ring-2 ring-red-200"
-                                : "hover:bg-gray-50"
-                            }`}
-                            style={{
-                              backgroundColor:
-                                options.format === format.value
-                                  ? "rgb(232, 240, 254)"
-                                  : "transparent",
-                            }}
-                          >
-                            <input
-                              type="radio"
-                              name="format"
-                              value={format.value}
-                              checked={options.format === format.value}
-                              onChange={(e) =>
-                                setOptions({
-                                  ...options,
-                                  format: e.target.value as
-                                    | "markdown"
-                                    | "html"
-                                    | "pdf",
-                                })
-                              }
-                              className="h-5 w-5 mt-0.5"
-                              style={{ accentColor: "rgb(254, 74, 96)" }}
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-1">
-                                <span className="text-lg">{format.icon}</span>
-                                <span
-                                  className="text-sm font-semibold"
-                                  style={{ color: "rgb(17, 24, 39)" }}
-                                >
-                                  {format.label}
-                                </span>
-                              </div>
-                              <p
-                                className="text-xs"
-                                style={{
-                                  color: "rgb(17, 24, 39)",
-                                  opacity: 0.6,
-                                }}
-                              >
-                                {format.desc}
-                              </p>
+                        {{
+                          value: "markdown",
+                          label: "Markdown (.md)",
+                          desc: "Best for GitHub and documentation platforms",
+                          icon: "📝",
+                        },
+                        {
+                          value: "html",
+                          label: "HTML (.html)",
+                          desc: "For web deployment and styling",
+                          icon: "🌐",
+                        },
+                        {
+                          value: "pdf",
+                          label: "PDF (.pdf)",
+                          desc: "Professional document format",
+                          icon: "📄",
+                        },
+                      ].map((format) => (
+                        <label
+                          key={format.value}
+                          className={`flex items-start space-x-4 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                            options.format === format.value ? 'ring-2 ring-red-200' : 'hover:bg-gray-50'
+                          }`}
+                          style={{ 
+                            backgroundColor: options.format === format.value ? "rgb(232, 240, 254)" : "transparent"
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            name="format"
+                            value={format.value}
+                            checked={options.format === format.value}
+                            onChange={(e) =>
+                              setOptions({
+                                ...options,
+                                format: e.target.value as
+                                  | "markdown"
+                                  | "html"
+                                  | "pdf",
+                              })
+                            }
+                            className="h-5 w-5 mt-0.5"
+                            style={{ accentColor: "rgb(254, 74, 96)" }}
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <span className="text-lg">{format.icon}</span>
+                              <span className="text-sm font-semibold" style={{ color: "rgb(17, 24, 39)" }}>
+                                {format.label}
+                              </span>
                             </div>
-                          </label>
-                        ))}
-                      </div>
+                            <p className="text-xs" style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}>
+                              {format.desc}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
                     </div>
 
                     {/* Detail Level */}
@@ -809,21 +786,15 @@ export default function Dashboard() {
                           })
                         }
                         className="w-full px-4 py-3 border rounded-xl text-sm font-medium focus:ring-2 focus:outline-none focus:ring-red-300"
-                        style={{
+                        style={{ 
                           borderColor: "rgb(230, 232, 235)",
                           backgroundColor: "rgb(255, 253, 248)",
-                          color: "rgb(17, 24, 39)",
+                          color: "rgb(17, 24, 39)"
                         }}
                       >
-                        <option value="basic">
-                          🔸 Basic - Essential information only
-                        </option>
-                        <option value="detailed">
-                          🔹 Detailed - Comprehensive documentation
-                        </option>
-                        <option value="comprehensive">
-                          💎 Comprehensive - Everything included
-                        </option>
+                        <option value="basic">🔸 Basic - Essential information only</option>
+                        <option value="detailed">🔹 Detailed - Comprehensive documentation</option>
+                        <option value="comprehensive">💎 Comprehensive - Everything included</option>
                       </select>
                     </div>
 
@@ -833,10 +804,7 @@ export default function Dashboard() {
                         className="text-base font-bold mb-4"
                         style={{ color: "rgb(17, 24, 39)" }}
                       >
-                        📊 Max File Size:{" "}
-                        <span style={{ color: "rgb(254, 74, 96)" }}>
-                          {options.maxFileSize}MB
-                        </span>
+                        📊 Max File Size: <span style={{ color: "rgb(254, 74, 96)" }}>{options.maxFileSize}MB</span>
                       </h3>
                       <input
                         type="range"
@@ -850,15 +818,12 @@ export default function Dashboard() {
                           })
                         }
                         className="w-full h-3 rounded-lg appearance-none cursor-pointer"
-                        style={{
+                        style={{ 
                           backgroundColor: "rgb(230, 232, 235)",
-                          accentColor: "rgb(254, 74, 96)",
+                          accentColor: "rgb(254, 74, 96)"
                         }}
                       />
-                      <div
-                        className="flex justify-between text-xs mt-2"
-                        style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}
-                      >
+                      <div className="flex justify-between text-xs mt-2" style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}>
                         <span>10MB</span>
                         <span>Small projects</span>
                         <span>Large codebases</span>
@@ -869,54 +834,39 @@ export default function Dashboard() {
                 </div>
 
                 {/* Generate Button - Prominent CTA */}
-                <div
-                  className="pt-6 border-t"
-                  style={{ borderColor: "rgb(230, 232, 235)" }}
-                >
+                <div className="pt-6 border-t" style={{ borderColor: "rgb(230, 232, 235)" }}>
                   <div className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="flex-1">
                       {selectedRepo ? (
                         <div className="text-center md:text-left">
-                          <p
-                            className="text-sm font-semibold"
-                            style={{ color: "rgb(17, 24, 39)" }}
-                          >
+                          <p className="text-sm font-semibold" style={{ color: "rgb(17, 24, 39)" }}>
                             Ready to generate documentation for{" "}
-                            <span style={{ color: "rgb(254, 74, 96)" }}>
-                              {selectedRepo.name}
-                            </span>
+                            <span style={{ color: "rgb(254, 74, 96)" }}>{selectedRepo.name}</span>
                           </p>
-                          <p
-                            className="text-xs mt-1"
-                            style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}
-                          >
-                            This will analyze your repository and create
-                            comprehensive documentation
+                          <p className="text-xs mt-1" style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}>
+                            This will analyze your repository and create comprehensive documentation
                           </p>
                         </div>
                       ) : (
                         <div className="text-center md:text-left">
-                          <p
-                            className="text-sm font-medium"
-                            style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}
-                          >
+                          <p className="text-sm font-medium" style={{ color: "rgb(17, 24, 39)", opacity: 0.6 }}>
                             Select a repository to get started
                           </p>
                         </div>
                       )}
                     </div>
-
+                    
                     <button
                       onClick={handleGenerateDocumentation}
                       disabled={!selectedRepo || isGenerating}
                       className={`flex items-center justify-center space-x-3 px-8 py-4 rounded-2xl text-base font-bold transition-all duration-200 shadow-lg hover:shadow-xl min-w-64 ${
                         !selectedRepo || isGenerating
-                          ? "cursor-not-allowed opacity-50"
-                          : "hover:scale-105 active:scale-95"
+                          ? 'cursor-not-allowed opacity-50'
+                          : 'hover:scale-105 active:scale-95'
                       }`}
-                      style={{
+                      style={{ 
                         backgroundColor: "rgb(254, 74, 96)",
-                        color: "white",
+                        color: "white"
                       }}
                     >
                       {isGenerating ? (

@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 
-// We're now using Binoma font from local files
+// We're now using PPMori font from local files
 // But keeping Geist Mono for code blocks
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -24,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistMono.variable} font-sans antialiased`}>
+      <body
+        className={`${geistMono.variable} font-sans antialiased bg-background text-text-primary`}
+      >
         <ErrorBoundary>
           <Providers>{children}</Providers>
         </ErrorBoundary>

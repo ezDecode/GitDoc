@@ -6,16 +6,20 @@ import { Octokit } from "octokit";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Check if user is authenticated with GitHub and has access token
-    if (session.provider === "github" && session.accessToken) {
+    const accessToken = (session as any).accessToken;
+    const provider = (session as any).provider;
+
+    if (provider === "github" && accessToken) {
       try {
         // Use real GitHub API with user's access token
         const octokit = new Octokit({
-          auth: session.accessToken,
+          auth: accessToken,
         });
 
         const { data: repositories } =
@@ -48,9 +52,7 @@ export async function GET(request: NextRequest) {
           { status: 500 }
         );
       }
-    }
-
-    // Fallback to mock data for non-GitHub authentication or missing access token
+    } // Fallback to mock data for non-GitHub authentication or missing access token
     const mockRepositories = [
       {
         id: 1,

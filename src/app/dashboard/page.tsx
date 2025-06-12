@@ -12,7 +12,6 @@ import {
   LockClosedIcon,
   GlobeAltIcon,
   CalendarDaysIcon,
-  ChevronRightIcon,
   MagnifyingGlassIcon,
   AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/outline";
@@ -51,7 +50,6 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<
     "repositories" | "settings" | "history"
   >("repositories");
-
   const [options, setOptions] = useState<DocumentationOptions>({
     includeReadme: true,
     includeApi: true,
@@ -80,10 +78,8 @@ export default function Dashboard() {
     setIsLoading(true);
     try {
       const response = await fetch("/api/github/repositories");
-
       if (response.ok) {
         const data = await response.json();
-        // The API returns { repositories: [...] }, so we need to extract the repositories array
         const repositories = data.repositories || [];
         setRepositories(Array.isArray(repositories) ? repositories : []);
       } else {
@@ -105,16 +101,12 @@ export default function Dashboard() {
           repo.description?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
-
   const handleGenerateDocumentation = async () => {
     if (!selectedRepo) return;
-
     setIsGenerating(true);
     try {
-      // Implementation for documentation generation
       console.log("Generating documentation for:", selectedRepo.name);
       console.log("Options:", options);
-
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 3000));
     } catch (error) {
@@ -123,7 +115,6 @@ export default function Dashboard() {
       setIsGenerating(false);
     }
   };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
@@ -193,13 +184,15 @@ export default function Dashboard() {
                 }}
               >
                 <CogIcon className="h-5 w-5" />
-              </button>
+              </button>{" "}
               <div className="flex items-center space-x-3">
-                <img
-                  src={session?.user?.image || ""}
-                  alt={session?.user?.name || ""}
-                  className="h-8 w-8 rounded-full ring-2 ring-gray-200"
-                />
+                {session?.user?.image && (
+                  <img
+                    src={session.user.image}
+                    alt={session?.user?.name || "User"}
+                    className="h-8 w-8 rounded-full ring-2 ring-gray-200"
+                  />
+                )}
                 <span
                   className="text-sm font-medium"
                   style={{ color: "rgb(17, 24, 39)" }}
@@ -339,8 +332,7 @@ export default function Dashboard() {
                                       : "white",
                                   color: "rgb(17, 24, 39)",
                                   ...(selectedRepo?.id === repo.id && {
-                                    ringColor: "rgb(254, 74, 96)",
-                                    ringWidth: "2px",
+                                    boxShadow: "0 0 0 2px rgb(254, 74, 96)",
                                   }),
                                 }}
                               >
@@ -849,7 +841,7 @@ export default function Dashboard() {
                             maxFileSize: parseInt(e.target.value),
                           })
                         }
-                        className="w-full h-3 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-3 rounded-lg appearance-none cursor-pointer slider"
                         style={{
                           backgroundColor: "rgb(230, 232, 235)",
                           accentColor: "rgb(254, 74, 96)",
